@@ -65,37 +65,37 @@ class UrlParamTypeError(BadRequestError):
 class CredentialsError(APIError):
     """When a login error occours"""
 
-    def __init__(self) -> None:
-        super().__init__(HTTPStatus.NOT_FOUND, {"message": "Wrong credentials"})
+    def __init__(self, message: str = "Wrong credentials.") -> None:
+        super().__init__(HTTPStatus.NOT_FOUND, {"message": message})
 
 class InvalidTokenError(APIError):
     """When a passed token does not exists"""
 
-    def __init__(self) -> None:
-        super().__init__(HTTPStatus.UNAUTHORIZED, {"message": "Invalid token"})
+    def __init__(self, message: str = "Invalid token.") -> None:
+        super().__init__(HTTPStatus.UNAUTHORIZED, {"message": message})
 
 class TimeoutError(APIError):
     """When lost much time in an action"""
 
-    def __init__(self) -> None:
-        super().__init__(HTTPStatus.REQUEST_TIMEOUT, {"message": "Timeout"})
+    def __init__(self, message: str = "Timeout.") -> None:
+        super().__init__(HTTPStatus.REQUEST_TIMEOUT, {"message": message})
 
 class DoNotExistsInDatabaseError(APIError):
     """When something do not exists in database"""
 
-    def __init__(self, table_name: str) -> None:
-        super().__init__(HTTPStatus.BAD_REQUEST,
-                         {"message": f"Invalid primary key of {table_name}"})
+    def __init__(self, table_name: str, message: str | None = None) -> None:
+        msg = message or f"Not found on {table_name}"
+        super().__init__(HTTPStatus.BAD_REQUEST, {"message": msg})
 
 class AlreadyExistsInDatabaseError(APIError):
     """When something already exists in database"""
 
-    def __init__(self, table_name: str) -> None:
-        super().__init__(HTTPStatus.CONFLICT,
-                         {"message": f"Primary key already exists on {table_name}"})
+    def __init__(self, table_name: str, message: str | None = None) -> None:
+        msg = message or f"Already exists in {table_name}"
+        super().__init__(HTTPStatus.CONFLICT, {"message": msg})
 
 class UnauthorizedError(APIError):
     """When the acion needs a specific role of something like"""
 
-    def __init__(self) -> None:
-        super().__init__(HTTPStatus.UNAUTHORIZED, {"message": "Não autorizado."})
+    def __init__(self, message: str = "Not authorized.") -> None:
+        super().__init__(HTTPStatus.UNAUTHORIZED, {"message": message})
