@@ -99,3 +99,10 @@ class UnauthorizedError(APIError):
 
     def __init__(self, message: str = "Not authorized.") -> None:
         super().__init__(HTTPStatus.UNAUTHORIZED, {"message": message})
+
+
+class FileNotFoundError(APIError):
+    """When a requested file does not exist"""
+
+    def __init__(self, file_path: str) -> None:
+        super().__init__(HTTPStatus.NOT_FOUND, {"message": f"File not found: {file_path}"})

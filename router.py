@@ -28,6 +28,9 @@ class html(str): pass
 
 class FileResponse:
     def __init__(self, file_path: str) -> None:
+        import os
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(file_path)
         self.file_path = file_path
 
     def get_content(self) -> bytes:
