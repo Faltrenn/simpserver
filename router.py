@@ -26,8 +26,21 @@ _routes: dict[HTTPMethod, dict[str, Route]] = {}
 
 class html(str): pass
 
+class FileResponse:
+    def __init__(self, file_path: str) -> None:
+        self.file_path = file_path
+
+    def get_content(self) -> bytes:
+        with open(self.file_path, "rb") as f:
+            return f.read()
+
+    def get_content_type(self) -> str:
+        import mimetypes
+        content_type, _ = mimetypes.guess_type(self.file_path)
+        return content_type or "application/octet-stream"
+
 # Parameters is Any | None.
-RouteCallbackReturn = str | dict | list | html
+RouteCallbackReturn = str | dict | list | html | FileResponse
 RouteCallback = Callable[..., RouteCallbackReturn]
 
 

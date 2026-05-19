@@ -7,7 +7,7 @@ import signal
 from datetime import datetime
 
 from .exceptions import APIError
-from .router import Route, RouteCallbackReturn, html, route, get_route_info
+from .router import Route, RouteCallbackReturn, html, route, get_route_info, FileResponse
 from .config import user_configs
 
 def timeout_handler(signum, frame):
@@ -131,6 +131,14 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 
         self.send_response(status_code)
+
+        if isinstance(response, FileResponse):
+            self.send_header("Content-Type", response.get_content_type())
+            self.send_header("Content-Length", len(response.get_content()))
+            self.end_headers()
+            self.wfile.write(response.get_content())
+            return
+
         self.set_default_headers()
 
         if isinstance(response, html):
