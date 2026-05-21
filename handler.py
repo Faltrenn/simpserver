@@ -27,6 +27,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server) -> None:
         self.conn = None
         self.cur  = None
+        self.head_request = False
         super().__init__(request, client_address, server)
 
     def set_default_headers(self) -> None:
@@ -136,10 +137,14 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", response.get_content_type())
             self.send_header("Content-Length", len(response.get_content()))
             self.end_headers()
-            self.wfile.write(response.get_content())
+            if not self.head_request:
+                self.wfile.write(response.get_content())
             return
 
         self.set_default_headers()
+
+        if self.head_request:
+            return
 
         if isinstance(response, html):
             self.wfile.write(response.encode("utf-8"))
@@ -155,6 +160,10 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(HTTPStatus.NO_CONTENT)
         self.set_default_headers()
+
+    def do_HEAD(self) -> None:
+        self.head_request = True
+        self.run_route(HTTPMethod.GET)
 
     def do_GET(self) -> None:
         self.run_route(HTTPMethod.GET)
