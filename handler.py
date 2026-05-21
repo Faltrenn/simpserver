@@ -129,8 +129,6 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.cur.close()
                 self.conn.close()
 
-
-
         self.send_response(status_code)
 
         if isinstance(response, FileResponse):
@@ -183,7 +181,7 @@ def serve_api(ip: str, port: int) -> None:
 
     print(f"Running api at: http://{ip}:{port}")
 
-    if user_configs["static_path"]:
+    if user_configs and user_configs["static_path"]:
         @route(f"{user_configs["static_url"]}<file:str>", HTTPMethod.GET)
         def serve_files(path_params: dict) -> str:
             return f"serving file: {path_params["file"]}"
