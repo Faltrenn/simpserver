@@ -179,7 +179,15 @@ class RequestHandler(BaseHTTPRequestHandler):
 def serve_api(ip: str, port: int) -> None:
     server = HTTPServer(((ip, port)), RequestHandler)
 
-    print(f"Running api at: http://{ip}:{port}")
+    use_https = False
+    if user_configs and user_configs.get("certfile") and user_configs.get("keyfile"):
+        import ssl
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain(user_configs["certfile"], user_configs["keyfile"])
+        server.socket = ssl_context.wrap_socket(server.socket, server_side=True)
+        use_https = True
+
+    print(f"Running api at: {"https" if use_https else "http"}://{ip}:{port}")
 
     if user_configs and user_configs["static_path"]:
         @route(f"{user_configs["static_url"]}<file:str>", HTTPMethod.GET)
